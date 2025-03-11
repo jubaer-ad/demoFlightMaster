@@ -64,7 +64,7 @@ namespace FlightMaster.Services
                 }
 
 
-                FileHelper.JsonFileSaveAsync($"Master-{trnxId}-RS", JsonConvert.SerializeObject(request), "SupplierOne", "Search");
+                FileHelper.JsonFileSaveAsync($"Master-{trnxId}-RS", JsonConvert.SerializeObject(rs), "SupplierOne", "Search");
                 return rs;
             }
             catch (Exception)

@@ -8,10 +8,14 @@ namespace Core.Helper
 {
     public abstract class FileHelper
     {
-        public static async void JsonFileSaveAsync(string fileName, string jsonString, string apiName, string logType)
+        private static string GeneratePath(string apiName, string logType)
         {
             var basePath = Environment.CurrentDirectory;
-            string path = Path.Combine(basePath, apiName, logType);
+            return Path.Combine(basePath, "Logs", apiName, logType);
+        }
+        public static async void JsonFileSaveAsync(string fileName, string jsonString, string apiName, string logType)
+        {
+            string path = GeneratePath(apiName, logType);
 
             try
             {
@@ -58,8 +62,7 @@ namespace Core.Helper
             string jsonString = string.Empty;
             try
             {
-                var basePath = Environment.CurrentDirectory;
-                string path = Path.Combine(basePath, apiName, logType);
+                string path = GeneratePath(apiName, logType);
 
                 if (Directory.Exists(path))
                 {
