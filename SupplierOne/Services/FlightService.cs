@@ -110,7 +110,13 @@ namespace SupplierOne.Services
                 var selectedSearchRS = searchRS?.FirstOrDefault(x => x.ItemCodeRef == request.ItemCodeRef)
                     ?? throw new Exception("Search response not found with the item key provided"); // Can be replaced with custom logic other than throwing exception as throwing exception is not a good practice
 
-                
+
+
+                // Validating pax info
+                var isValidPax = Helper.Misc.ValidatePassengerData(request.Passengers, selectedSearchRS.PassengerFares);
+
+                if (!isValidPax)
+                    throw new Exception("Invalid Passenger Data");
 
                 var rs = await Task.Run(() =>
                 {
@@ -126,8 +132,12 @@ namespace SupplierOne.Services
                         FlightPrice = selectedSearchRS.FlightPrice,
                         PassengerFares = selectedSearchRS.PassengerFares
                     };
-
-
+                    var paxCounter = 0;
+                    foreach (var item in request.Passengers)
+                    {
+                        item.PassengerKey = $"Pax{++paxCounter}";
+                    }
+                    supplierBookRS.Passengers = request.Passengers;
 
                     return supplierBookRS;
                 });
