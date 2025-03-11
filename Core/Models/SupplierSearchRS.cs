@@ -12,9 +12,9 @@
     }
     public class PassengerFares
     {
-        public PriceComponent? Adult { get; set; }
-        public PriceComponent? Child { get; set; }
-        public PriceComponent? Infant { get; set; }
+        public PaxPriceComponent? Adult { get; set; }
+        public PaxPriceComponent? Child { get; set; }
+        public PaxPriceComponent? Infant { get; set; }
     }
 
     public class PriceComponent
@@ -22,6 +22,11 @@
         public decimal BasePrice { get; set; }
         public decimal Tax { get; set; }
         public decimal Total { get; set; }
+    }
+
+    public class PaxPriceComponent : PriceComponent
+    {
+        public int Count { get; set; }
     }
     public class Direction
     {

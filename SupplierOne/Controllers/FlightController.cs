@@ -16,5 +16,14 @@ namespace SupplierOne.Controllers
             var rs = await flightService.HandleSearchAsync(request);
             return Ok(rs);
         }
+
+        [HttpPost]
+        [Route("book")]
+        public async Task<IActionResult> Book([FromBody] SupplierBookRQ request)
+        {
+            var rs = await flightService.HandleBookAsync(request);
+            return Ok(rs);
+        }
+
     }
 }

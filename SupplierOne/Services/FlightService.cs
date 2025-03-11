@@ -37,23 +37,26 @@ namespace SupplierOne.Services
                         TrnxId = request.TrnxId,
                         PassengerFares = new PassengerFares
                         {
-                            Adult = request.Adult > 0 ? new PriceComponent
+                            Adult = request.Adult > 0 ? new()
                             {
                                 BasePrice = rnd.Next(100, 1000),
                                 Tax = rnd.Next(10, 100),
-                                Total = rnd.Next(100, 1000)
+                                Total = rnd.Next(100, 1000),
+                                Count = request.Adult
                             } : default,
-                            Child = request.Child > 0 ? new PriceComponent
+                            Child = request.Child > 0 ? new()
                             {
                                 BasePrice = rnd.Next(100, 1000),
                                 Tax = rnd.Next(10, 100),
-                                Total = rnd.Next(100, 1000)
+                                Total = rnd.Next(100, 1000),
+                                Count = request.Child
                             } : default,
-                            Infant = request.Infant > 0 ? new PriceComponent
+                            Infant = request.Infant > 0 ? new()
                             {
                                 BasePrice = rnd.Next(100, 1000),
                                 Tax = rnd.Next(10, 100),
-                                Total = rnd.Next(100, 1000)
+                                Total = rnd.Next(100, maxValue: 1000),
+                                Count = request.Infant
                             } : default
                         },
                         Directions = []
@@ -81,6 +84,66 @@ namespace SupplierOne.Services
 
             FileHelper.JsonFileSaveAsync($"SupplierOne-{request.TrnxId}-RS", JsonConvert.SerializeObject(rs), "SupplierOne", "Search");
             return rs;
+        }
+
+        public async Task<SupplierBookRS?> HandleBookAsync(SupplierBookRQ request)
+        {
+
+            try
+            {
+                FileHelper.JsonFileSaveAsync(
+                    $"SupplierOne-{request.TrnxId}-RQ",
+                    JsonConvert.SerializeObject(request),
+                    "SupplierOne",
+                    "Book");
+
+                var searchRSStr = await FileHelper.JsonFileRetriveAsync(
+                    $"SupplierOne-{request.TrnxId}-RS",
+                    "SupplierOne",
+                    "Search");
+
+                if (string.IsNullOrEmpty(searchRSStr))
+                    return null;
+
+                var searchRS = JsonConvert.DeserializeObject<List<SupplierSearchRS>>(searchRSStr);
+
+                var selectedSearchRS = searchRS?.FirstOrDefault(x => x.ItemCodeRef == request.ItemCodeRef)
+                    ?? throw new Exception("Search response not found with the item key provided"); // Can be replaced with custom logic other than throwing exception as throwing exception is not a good practice
+
+                
+
+                var rs = await Task.Run(() =>
+                {
+                    SupplierBookRS supplierBookRS = new()
+                    {
+                        Passengers = [],
+                        PNR = Helper.Misc.GeneratePNR(),
+                        Status = "Booked",
+                        TrnxId = request.TrnxId,
+                        LastTicketingTimeLimit = DateTime.Now.AddHours(24),
+                        Directions = selectedSearchRS.Directions,
+                        FlightNumber = selectedSearchRS.FlightNumber,
+                        FlightPrice = selectedSearchRS.FlightPrice,
+                        PassengerFares = selectedSearchRS.PassengerFares
+                    };
+
+
+
+                    return supplierBookRS;
+                });
+
+                FileHelper.JsonFileSaveAsync(
+                    $"SupplierOne-{request.TrnxId}-RS",
+                    JsonConvert.SerializeObject(rs),
+                    "SupplierOne",
+                    "Book");
+                return rs;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

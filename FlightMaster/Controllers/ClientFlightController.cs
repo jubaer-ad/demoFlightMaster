@@ -16,5 +16,13 @@ namespace FlightMaster.Controllers
             var rs = await clientFlightServices.HandleSearchAsync(request);
             return Ok(rs);
         }
+
+        [HttpPost]
+        [Route("book")]
+        public async Task<IActionResult> Books([FromBody] ClientBookRQ request)
+        {
+            var rs = await clientFlightServices.HandleBookAsync(request);
+            return Ok(rs);
+        }
     }
 }

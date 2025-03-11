@@ -1,11 +1,15 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+
 namespace Core.Models
 {
     public class SupplierSearchRQ : ClientSearchRQ
     {
-        public ApiCredential ApiCredential { get; set; }
-        public decimal ConvertionRate { get; set; }
-        public string TrnxId { get; set; }
+        [Required]
+        public required ApiCredential ApiCredential { get; set; }
+        public decimal ConvertionRate { get; set; } = 1;
+        [Required]
+        public required string TrnxId { get; set; }
     }
 
     public class ApiCredential
