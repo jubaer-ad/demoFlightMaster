@@ -37,11 +37,11 @@ namespace SupplierOne.Helper
 
             foreach(var pax in passengers)
             {
-                if (pax.PassengerType == "ADT")
+                if (pax.PassengerType == PassengerType.ADT)
                     adt++;
-                else if (pax.PassengerType == "CHD")
+                else if (pax.PassengerType == PassengerType.CHD)
                     child++;
-                else if (pax.PassengerType == "INF")
+                else if (pax.PassengerType == PassengerType.INF)
                     inf++;
             }
 
