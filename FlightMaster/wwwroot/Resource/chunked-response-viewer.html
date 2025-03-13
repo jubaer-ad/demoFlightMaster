@@ -1,0 +1,308 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Response Stream Viewer</title>
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --accent-color: #6366f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7ff;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #3a5bd7;
+            }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+            .btn-secondary:hover {
+                background-color: #5a6268;
+            }
+
+        .loading {
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .response-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .response-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background-color: var(--light-color);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .response-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .response-item {
+            position: relative;
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response-item.new {
+            border-left-color: var(--success-color);
+        }
+
+        .response-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .response-item-title {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .response-item-time {
+            font-size: 12px;
+            color: var(--secondary-color);
+        }
+
+        .response-item-content {
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            font-family: 'Consolas', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .response-item-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--secondary-color);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .badge-info {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: black;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--secondary-color);
+        }
+
+        .json-key {
+            color: #9b2c2c;
+        }
+
+        .json-value {
+            color: #2c5282;
+        }
+
+        .json-string {
+            color: #2f855a;
+        }
+
+        .json-number {
+            color: #805ad5;
+        }
+
+        .error-message {
+            background-color: #fff5f5;
+            color: var(--danger-color);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>API Response Stream Viewer</h1>
+            <p>Watch API responses arrive in real-time using chunked transfer encoding</p>
+        </header>
+
+        <div class="controls">
+            <button id="fetchBtn" class="btn btn-primary">Fetch API Data</button>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <span>Fetching data...</span>
+            </div>
+            <button id="clearBtn" class="btn btn-secondary">Clear Results</button>
+        </div>
+
+        <div class="response-container">
+            <div class="response-header">
+                <h2>Response Stream</h2>
+                <div class="response-stats">
+                    <div class="stat-box">
+                        Items: <span id="itemCount">0</span>
+                    </div>
+                    <div class="stat-box">
+                        Total time: <span id="totalTime">0ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="response-items" id="responseItems">
+                <div class="empty-state" id="emptyState">
+                    <p>No data yet. Click "Fetch API Data" to start.</p>
+                </div>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <footer>
+            <p>© 2025 API Response Stream Viewer | Built with modern web technologies</p>
+        </footer>
+    </div>
+
+    <script src="/Resource/chunk-rsp.js">
+        
+    </script>
+    

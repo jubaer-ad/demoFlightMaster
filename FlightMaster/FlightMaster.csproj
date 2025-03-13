@@ -14,4 +14,9 @@
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Resource\chunk-rsp.js" />
+    <None Include="wwwroot\Resource\chunked-response-viewer.html" />
+  </ItemGroup>
+
 </Project>
