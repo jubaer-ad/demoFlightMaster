@@ -1,12 +1,19 @@
-﻿namespace Core.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Core.Models
 {
     public class ClientSearchRQ
     {
         public List<Route> Routes { get; set; }
-        public int Adult { get; set; }
-        public int Child { get; set; }
-        public int Infant { get; set; }
 
+        [Range(0, int.MaxValue)]
+        public int Adult { get; set; }
+
+        [Range(0, int.MaxValue)]
+        public int Child { get; set; }
+
+        [Range(0, int.MaxValue)]
+        public int Infant { get; set; }
     }
     public class Route
     {

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightMaster.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/master")]
     [ApiController]
     public class ClientFlightController(ClientFlightServices clientFlightServices) : ControllerBase
     {

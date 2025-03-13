@@ -23,7 +23,7 @@ namespace Core.Models
     public class PassengerData
     {
         public PassengerName NameElement { get; set; }
-        public required string PassengerType { get; set; }
+        public required PassengerType PassengerType { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? PassengerKey { get; set; }
         public string? PassportCopy { get; set; }
@@ -36,4 +36,12 @@ namespace Core.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }
+
+    public enum PassengerType
+    {
+        ADT = 1,
+        CHD,
+        INF
+    }
+
 }
